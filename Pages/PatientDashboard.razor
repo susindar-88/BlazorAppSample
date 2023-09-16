@@ -1,0 +1,52 @@
+@page "/patients"
+@inject HttpClient Http
+@inject Microsoft.Extensions.Configuration.IConfiguration config;
+
+<PageTitle>Patients</PageTitle>
+
+<h1>Dashboard - Patients</h1>
+
+@if (patients == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Address</th>
+                <th>State</th>
+                <th>City</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>IsDeleted</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var patient in patients)
+            {
+                <tr>
+                    <td>@patient.FirstName</td>
+                    <td>@patient.LastName</td>
+                    <td>@patient.Address</td>
+                    <td>@patient.State</td>
+                    <td>@patient.City</td>
+                    <td>@patient.CreatedAt</td>
+                    <td>@patient.UpdatedAt</td>
+                    <td>@patient.IsDeleted</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private Patient[]? patients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await Http.GetFromJsonAsync<Patient[]>("/patients");
+    }
+}

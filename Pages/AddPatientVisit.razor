@@ -1,0 +1,55 @@
+@page "/patients-add-visit"
+@inject HttpClient Http
+
+<PageTitle>Add Patient Visits</PageTitle>
+
+<h1>Patient Visits</h1>
+
+<EditForm Model="@Model" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>
+            Patient:
+            <select @onchange="OnValueChanged" title="Patient is required">
+                <option value="" selected disabled="disabled">(Choose Region)</option>
+                @foreach (var patient in patients)
+                {
+                    <option value="@patient.ID"> @patient.FirstName</option>
+                }
+            </select>
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+    private ProgressNote Model { get; set; } = new ProgressNote();
+
+    private Patient[] patients { get; set; } = new List<Patient>(0).ToArray();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model ??= new() { VisitDate = DateTime.UtcNow.ToString() };
+        patients = await Http.GetFromJsonAsync<Patient[]>("/patients") ?? new List<Patient>(0).ToArray();
+    }
+
+    private async Task Submit()
+    {
+        var isSuccess = await Http.PostAsJsonAsync<ProgressNote>("/patientvisit", Model);
+    }
+
+    private Task OnValueChanged(ChangeEventArgs e)
+    {
+
+        if (e == null || e.Value == null || Model == null)
+            return Task.CompletedTask;
+
+        Model.Patient = patients.FirstOrDefault<Patient>(s => s.ID == int.Parse(e.Value.ToString()!.Replace("'", "\"")));
+
+        return Task.CompletedTask;
+    }
+}

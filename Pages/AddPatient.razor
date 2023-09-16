@@ -1,0 +1,57 @@
+@page "/patients-add"
+@inject HttpClient Http
+
+<PageTitle>Add Patients</PageTitle>
+
+<h1>Patient</h1>
+
+<EditForm Model="@Model" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>
+            First Name:
+            <InputText @bind-Value="Model!.FirstName" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Last Name:
+            <InputText @bind-Value="Model!.LastName" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Address:
+            <InputText @bind-Value="Model!.Address" />
+        </label>
+    </div>
+    <div>
+        <label>
+            City:
+            <InputText @bind-Value="Model!.State" />
+        </label>
+    </div>
+    <div>
+        <label>
+            City:
+            <InputText @bind-Value="Model!.City" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+    private Patient Model { get; set; } = new Patient();
+
+    protected override void OnInitialized() =>
+    Model ??= new() { CreatedAt = DateTime.UtcNow.ToString() };
+
+    private async Task Submit()
+    {
+        var isSuccess = await Http.PostAsJsonAsync<Patient>("/patients", Model);
+    }
+}
