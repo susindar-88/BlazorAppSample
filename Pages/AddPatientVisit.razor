@@ -31,6 +31,8 @@
 
     private Patient[] patients { get; set; } = new List<Patient>(0).ToArray();
 
+    private bool isSuccess { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         Model ??= new() { VisitDate = DateTime.UtcNow.ToString() };
@@ -39,7 +41,8 @@
 
     private async Task Submit()
     {
-        var isSuccess = await Http.PostAsJsonAsync<ProgressNote>("/patientvisit", Model);
+        var response = await Http.PostAsJsonAsync<ProgressNote>("/patientvisit", Model);
+        isSuccess = response.StatusCode == System.Net.HttpStatusCode.OK;
     }
 
     private Task OnValueChanged(ChangeEventArgs e)
